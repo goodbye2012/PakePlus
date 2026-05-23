@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长征云迹</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft Yahei", sans-serif;
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            color: #fff;
+            padding-bottom: 70px;
+            min-height: 100vh;
+        }
+        /* 登录注册页面样式 */
+        .login-register-wrap{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-card{
+            width: 100%;
+            max-width: 380px;
+            background: rgba(0,0,0,0.35);
+            border-radius: 15px;
+            padding: 30px 25px;
+        }
+        .auth-title{
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 25px;
+            color: #FFD700;
+        }
+        .input-item{
+            margin-bottom: 18px;
+        }
+        .input-item label{
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .auth-input{
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            color: #333;
+        }
+        .tip-text{
+            font-size: 12px;
+            color: #ffcccc;
+            margin-top: 4px;
+        }
+        .auth-btn{
+            width: 100%;
+            padding: 13px;
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .switch-text{
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .switch-btn{
+            color: #FFD700;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .header { 
+            text-align: center; 
+            padding: 15px 10px; 
+            background: rgba(0,0,0,0.3);
+        }
+        .header h1 {font-size: 20px;margin-bottom: 5px;}
+        .nav {
+            position: fixed;
+            bottom: 0;left: 0;width: 100%;
+            height: 65px;display: flex;
+            justify-content: space-around;align-items: center;
+            background: rgba(0,0,0,0.9);z-index: 999;
+        }
+        .nav-btn {
+            background: transparent;border: none;color: #fff;
+            font-size: 13px;cursor: pointer;
+        }
+        .nav-btn.active { color: #FFD700; font-weight: bold; }
+        .container { padding: 15px; }
+        .card { 
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;padding: 15px;margin-bottom: 15px;
+        }
+        .hidden { display: none; }
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #fff;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .site-point {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #dc143c;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(220,20,60,0.5);
+        }
+        .site-line {
+            position: absolute;
+            background: #dc143c;
+            height: 2px;
+            transform-origin: left center;
+        }
+        .point-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 99999;
+            max-width: 300px;
+            text-align: center;
+        }
+        .close-popup {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .key-img-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .key-img-item {
+            width: calc(50% - 5px);
+            text-align: center;
+        }
+        .key-img-item img {
+            width: 100%;
+            border-radius: 6px;
+            cursor: zoom-in;
+        }
+        .key-img-name {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .img-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .popup-img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+        .close-img {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+        }
+        .sub-menu { padding-left: 20px; }
+        .sub-item { padding: 10px 0; }
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+        }
+        .chat-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            color: #333;
+        }
+        .send-btn {
+            padding: 10px 20px;
+            background: #fff;
+            color: #c0392b;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .song-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+        .play-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff;
+            color: #c0392b;
+            border: none;
+            cursor: pointer;
+        }
+        .quit-btn{
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        /* 新增AI问答样式优化 */
+        .chat-message {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background: #c0392b;
+            color: #fff;
+            margin-left: auto;
+        }
+        .ai-message {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            margin-right: auto;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录注册页面 -->
+    <div class="login-register-wrap" id="authPage">
+        <div class="auth-card">
+            <div class="auth-title" id="authTitle">账号登录</div>
+
+            <!-- 登录表单 -->
+            <div id="loginForm">
+                <div class="input-item">
+                    <label>手机号账号</label>
+                    <input type="text" class="auth-input" id="loginPhone" placeholder="请输入注册手机号">
+                </div>
+                <div class="input-item">
+                    <label>登录密码</label>
+                    <input type="password" class="auth-input" id="loginPwd" placeholder="输入密码">
+                </div>
+                <button class="auth-btn" onclick="userLogin()">立即登录</button>
+                <div class="switch-text">
+                    还没有账号？<span class="switch-btn" onclick="switchAuthMode('register')">去注册</span>
+                </div>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="registerForm" class="hidden">
+                <div class="input-item">
+                    <label>手机号码</label>
+                    <input type="text" class="auth-input" id="regPhone" placeholder="请输入11位手机号">
+                    <div class="tip-text">账号必须为有效11位手机号码</div>
+                </div>
+                <div class="input-item">
+                    <label>设置密码</label>
+                    <input type="password" class="auth-input" id="regPwd" placeholder="8位含大小写字母+数字">
+                    <div class="tip-text">密码不少于8位，必须包含大写、小写字母、数字</div>
+                </div>
+                <div class="input-item">
+                    <label>确认密码</label>
+                    <input type="password" class="auth-input" id="regRePwd" placeholder="再次输入密码">
+                </div>
+                <button class="auth-btn" onclick="userRegister()">完成注册</button>
+                <div class="switch-text">
+                    已有账号？<span class="switch-btn" onclick="switchAuthMode('login')">去登录</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主应用页面 -->
+    <div id="mainApp" class="hidden">
+        <!-- 图片放大弹窗 -->
+        <div class="img-popup" id="imgPopup">
+            <span class="close-img" onclick="closeImgPopup()">×</span>
+            <img class="popup-img" id="popupImg">
+        </div>
+
+        <!-- 节点详情弹窗 -->
+        <div class="point-popup hidden" id="pointPopup">
+            <span class="close-popup" onclick="closePointPopup()">×</span>
+            <h3 id="popupTitle"></h3>
+            <p id="popupTime"></p>
+            <p id="popupStory"></p>
+        </div>
+
+        <div class="header">
+            <h1>长征云迹</h1>
+            <p>红军长征胜利90周年主题互动平台</p>
+        </div>
+
+        <div class="container">
+            <!-- 长征路线页 -->
+            <div id="map-tab" class="tab-content">
+                <div class="card">
+                    <h2 style="font-size:17px">🚩 长征路线可视化</h2>
+                    <p style="margin:10px 0;font-size:14px">点击路线节点查看故事与时间</p>
+
+                    <div class="map-container" id="routeMap">
+                        <div class="site-point" style="top:20%;left:8%" onclick="showPointDetail('瑞金')">瑞</div>
+                        <div class="site-point" style="top:30%;left:15%" onclick="showPointDetail('于都')">于</div>
+                        <div class="site-point" style="top:45%;left:25%" onclick="showPointDetail('湘江')">湘</div>
+                        <div class="site-point" style="top:55%;left:35%" onclick="showPointDetail('遵义')">遵</div>
+                        <div class="site-point" style="top:65%;left:42%" onclick="showPointDetail('赤水')">赤</div>
+                        <div class="site-point" style="top:75%;left:48%" onclick="showPointDetail('金沙江')">金</div>
+                        <div class="site-point" style="top:80%;left:55%" onclick="showPointDetail('大渡河')">渡</div>
+                        <div class="site-point" style="top:70%;left:65%" onclick="showPointDetail('泸定桥')">泸</div>
+                        <div class="site-point" style="top:60%;left:72%" onclick="showPointDetail('夹金山')">夹</div>
+                        <div class="site-point" style="top:50%;left:78%" onclick="showPointDetail('懋功')">懋</div>
+                        <div class="site-point" style="top:40%;left:85%" onclick="showPointDetail('草地')">草</div>
+                        <div class="site-point" style="top:30%;left:90%" onclick="showPointDetail('腊子口')">腊</div>
+                        <div class="site-point" style="top:20%;left:92%" onclick="showPointDetail('吴起镇')">吴</div>
+                    </div>
+
+                    <div class="key-title">📸 五大关键节点图集（点击可放大）</div>
+                    <div class="key-img-group">
+                        <div class="key-img-item">
+                            <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.81.cn%2Fupload%2Fimages%2F202109%2F27%2F20210927162625_3921.jpeg&refer=http%3A%2F%2Fwww.81.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto" onclick="openImgPopup(this.src)">
+                            <div class="key-img-name">瑞金出发</div>
+                        </div>
+                        <div class="key-img-item">
+                            <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.people.com.cn%2Ffile%2F20161021%2F1021_103911_77A74F5289514874959902120D98C276.jpg&refer=http%3A%2F%2Fpic.people.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto" onclick="openImgPopup(this.src)">
+                            <div class="key-img-name">遵义会议</div>
+                        </div>
+                        <div class="key-img-item">
+                            <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.cztv.com%2Fupload%2F2016%2F10%2F20%2F20161020102244213.jpg&refer=http%3A%2F%2Fimg.cztv.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto" onclick="openImgPopup(this.src)">
+                            <div class="key-img-name">飞夺泸定桥</div>
+                        </div>
+                        <div class="key-img-item">
+                            <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.baike.soso.com%2Fugc%2Fbk%2F20180523%2F20180523160308-1264411004.jpg&refer=http%3A%2F%2Fpic.baike.soso.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto" onclick="openImgPopup(this.src)">
+                            <div class="key-img-name">爬雪山过草地</div>
+                        </div>
+                        <div class="key-img-item">
+                            <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.81.cn%2Fupload%2Fimages%2F202109%2F27%2F20210927162812_8463.jpeg&refer=http%3A%2F%2Fwww.81.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto" onclick="openImgPopup(this.src)">
+                            <div class="key-img-name">三军会师</div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin:12px 0 5px;font-size:15px">长征纪录片（CCTV官方）</h3>
+                    <iframe width="100%" height="250" style="border-radius:8px"
+                            src="https://tv.cctv.com/2019/10/14/VIDE4k2l3SgIvJaUfNqlnhs191014.shtml"
+                            frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- 红歌播放页-支持全网搜索 -->
+            <div id="music-tab" class="tab-content hidden">
+                <div class="card">
+                    <h2 style="font-size:17px;margin-bottom:15px">🎵 全网红歌搜索播放</h2>
+                    <p style="font-size:13px;margin-bottom:10px">可搜索各大音乐平台曲目</p>
+                    <div style="display:flex;gap:8px;margin-bottom:15px;">
+                        <input type="text" id="songSearchInput"
+                            style="flex:1;padding:8px 12px;border-radius:6px;border:none;color:#333;"
+                            placeholder="输入歌名/歌手全网搜索..." />
+                        <button onclick="searchNetSongs()"
+                            style="padding:8px 15px;background:#c0392b;border:none;border-radius:6px;color:#fff;cursor:pointer;">
+                            全网搜索
+                        </button>
+                    </div>
+                    <div id="songList"></div>
+                    <audio id="audioPlayer" controls style="width:100%;margin-top:15px;">
+                </div>
+            </div>
+
+            <!-- AI问答页 -->
+            <div id="qa-tab" class="tab-content hidden">
+                <div class="card">
+                    <h2 style="font-size:17px;margin-bottom:15px">🤖 AI长征问答助手</h2>
+                    <p style="margin:10px 0;font-size:14px">关于长征的问题，随时提问交流！</p>
+                    <div class="chat-box" id="chat-box">
+                        <div class="chat-message ai-message">你好！我是长征知识AI助手，你可以问我关于长征的任何问题~</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="userInput" placeholder="输入你的问题...">
+                        <button class="send-btn" onclick="sendMsg()">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 知识闯关页-扩充大量题库 -->
+            <div id="quiz-tab" class="tab-content hidden">
+                <div class="card">
+                    <h2 style="font-size:17px;margin-bottom:15px">🎯 长征知识闯关</h2>
+                    <div id="quiz-content"></div>
+                    <p style="text-align:right;margin-top:10px;">当前得分: <span id="score">0</span></p>
+                    <button class="auth-btn" style="margin-top:15px" onclick="nextQuiz()">下一题</button>
+                </div>
+            </div>
+
+            <!-- 个人中心页 -->
+            <div id="mine-tab" class="tab-content hidden">
+                <div class="card">
+                    <h2 style="font-size:17px;margin-bottom:15px">👤 我的</h2>
+                    <div class="menu-item" onclick="toggleSub('info')">个人资料 <span>▼</span></div>
+                    <div class="sub-menu hidden" id="infoSub">
+                        <div class="sub-item">当前账号：<span id="nowPhone"></span></div>
+                        <div class="sub-item">学习记录</div>
+                        <div class="sub-item">闯关积分</div>
+                    </div>
+                    <div class="menu-item" onclick="toggleSub('safe')">账号安全 <span>▼</span></div>
+                    <div class="sub-menu hidden" id="safeSub">
+                        <div class="sub-item">修改密码</div>
+                    </div>
+                    <div class="menu-item" onclick="toggleSub('privacy')">个人信息与权限 <span>▼</span></div>
+                    <div class="sub-menu hidden" id="privacySub">
+                        <div class="sub-item">权限设置</div>
+                    </div>
+                    <div class="menu-item" onclick="toggleSub('more')">更多 <span>▼</span></div>
+                    <div class="sub-menu hidden" id="moreSub">
+                        <div class="sub-item">系统设置</div>
+                    </div>
+                    <button class="quit-btn" onclick="logoutAccount()">退出登录</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <button class="nav-btn active" onclick="switchTab('map')">长征路线</button>
+            <button class="nav-btn" onclick="switchTab('music')">红歌播放</button>
+            <button class="nav-btn" onclick="switchTab('qa')">AI问答</button>
+            <button class="nav-btn" onclick="switchTab('quiz')">知识闯关</button>
+            <button class="nav-btn" onclick="switchTab('mine')">我的</button>
+        </div>
+    </div>
+
+<script>
+    // ========== 登录注册 & 本地存储模拟后台 ==========
+    // 本地存储模拟后台数据库，保存注册账号密码
+    let userDB = JSON.parse(localStorage.getItem('longMarchUser')) || [];
+    let currentUser = null;
+
+    // 切换登录注册表单
+    function switchAuthMode(type){
+        const loginForm = document.getElementById('loginForm');
+        const regForm = document.getElementById('registerForm');
+        const title = document.getElementById('authTitle');
+        if(type === 'register'){
+            loginForm.classList.add('hidden');
+            regForm.classList.remove('hidden');
+            title.innerText = '账号注册';
+        }else{
+            regForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            title.innerText = '账号登录';
+        }
+    }
+
+    // 手机号校验
+    function checkPhone(phone){
+        return /^1[3-9]\d{9}$/.test(phone);
+    }
+
+    // 密码校验：8位及以上，包含大小写字母+数字
+    function checkPwd(pwd){
+        if(pwd.length < 8) return false;
+        let hasUpper = /[A-Z]/.test(pwd);
+        let hasLower = /[a-z]/.test(pwd);
+        let hasNum = /[0-9]/.test(pwd);
+        return hasUpper && hasLower && hasNum;
+    }
+
+    // 注册功能
+    function userRegister(){
+        let phone = document.getElementById('regPhone').value.trim();
+        let pwd = document.getElementById('regPwd').value.trim();
+        let repwd = document.getElementById('regRePwd').value.trim();
+
+        if(!checkPhone(phone)){
+            alert('请输入合法的11位手机号码！');
+            return;
+        }
+        if(!checkPwd(pwd)){
+            alert('密码必须8位以上，包含大小写字母和数字！');
+            return;
+        }
+        if(pwd !== repwd){
+            alert('两次输入密码不一致！');
+            return;
+        }
+        // 判断账号是否已存在
+        let exist = userDB.find(item => item.phone === phone);
+        if(exist){
+            alert('该手机号已注册，直接登录即可！');
+            return;
+        }
+        // 存入模拟后台
+        userDB.push({phone,pwd});
+        localStorage.setItem('longMarchUser',JSON.stringify(userDB));
+        alert('注册成功！请前往登录');
+        switchAuthMode('login');
+    }
+
+    // 登录功能
+    function userLogin(){
+        let phone = document.getElementById('loginPhone').value.trim();
+        let pwd = document.getElementById('loginPwd').value.trim();
+        let user = userDB.find(item => item.phone === phone && item.pwd === pwd);
+        if(!user){
+            alert('账号或密码错误，请核对！');
+            return;
+        }
+        currentUser = user;
+        document.getElementById('nowPhone').innerText = phone;
+        document.getElementById('authPage').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+    }
+
+    // 退出登录
+    function logoutAccount(){
+        currentUser = null;
+        document.getElementById('mainApp').classList.add('hidden');
+        document.getElementById('authPage').classList.remove('hidden');
+        document.getElementById('loginPhone').value = '';
+        document.getElementById('loginPwd').value = '';
+    }
+
+    // ========== 路线节点数据 ==========
+    const pointData = {
+        "瑞金": {time: "1934年10月",story: "中央红军主力从江西瑞金出发，告别中央苏区，开始二万五千里长征。"},
+        "于都": {time: "1934年10月16日",story: "红军在于都河集结，深夜分批渡河，突破国民党第一道封锁线，踏上远征之路。"},
+        "湘江": {time: "1934年11-12月",story: "长征途中最惨烈的一战，红军浴血奋战突破第四道封锁线，兵力锐减但保住主力。"},
+        "遵义": {time: "1935年1月",story: "召开遵义会议，纠正错误军事路线，确立毛泽东领导地位，是革命生死攸关的转折点。"},
+        "赤水": {time: "1935年1-3月",story: "四渡赤水，声东击西甩开数十万追兵，创造了中外军事史上的经典运动战范例。"},
+        "金沙江": {time: "1935年5月",story: "红军找到船只连夜渡江，跳出敌军包围圈，实现战略转移。"},
+        "大渡河": {time: "1935年5月",story: "十七名勇士乘坐木船，冒着枪林弹雨强渡大渡河，撕开天险防线。"},
+        "泸定桥": {time: "1935年5月29日",story: "二十二名突击战士攀爬光秃秃的铁索，奋勇冲锋夺取泸定桥，攻克川西咽喉要道。"},
+        "夹金山": {time: "1935年6月",story: "翻越长征第一座大雪山，山峰常年积雪、空气稀薄严寒刺骨，无数战士长眠于此。"},
+        "懋功": {time: "1935年6月",story: "中央红军与红四方面军顺利会师，两军兵力汇合壮大，极大提振了全军士气。"},
+        "草地": {time: "1935年8月",story: "穿越茫茫松潘草地，缺衣少食气候恶劣，红军啃草根、煮皮带坚持前行。"},
+        "腊子口": {time: "1935年9月",story: "腊子口地势险峻易守难攻，红军战士奋勇攻坚突破天险，打开进入陕北的大门。"},
+        "吴起镇": {time: "1935年10月19日",story: "中央红军抵达陕北吴起镇，历时一年跋涉二万五千里，宣告中央红军长征圆满结束。"}
+    };
+
+    function showPointDetail(pointName) {
+        const data = pointData[pointName];
+        document.getElementById('popupTitle').innerText = pointName;
+        document.getElementById('popupTime').innerText = "时间：" + data.time;
+        document.getElementById('popupStory').innerText = "故事：" + data.story;
+        document.getElementById('pointPopup').classList.remove('hidden');
+    }
+    function closePointPopup() {
+        document.getElementById('pointPopup').classList.add('hidden');
+    }
+
+    // 图片放大
+    function openImgPopup(imgSrc) {
+        document.getElementById('popupImg').src = imgSrc;
+        document.getElementById('imgPopup').style.display = 'flex';
+    }
+    function closeImgPopup() {
+        document.getElementById('imgPopup').style.display = 'none';
+    }
+
+    // 页面切换
+    function switchTab(name) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name + '-tab').classList.remove('hidden');
+        event.target.classList.add('active');
+    }
+
+    // 个人中心下拉
+    function toggleSub(type) {
+        const allSub = ['infoSub','safeSub','privacySub','moreSub'];
+        allSub.forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById(type + 'Sub').classList.toggle('hidden');
+    }
+
+    // ========== 全网红歌搜索播放 ==========
+    const netSongLib = [
+        { name: "十送红军", singer: "经典红歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+        { name: "映山红", singer: "闪闪的红星", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+        { name: "红星歌", singer: "经典红歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+        { name: "过雪山草地", singer: "长征组歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+        { name: "四渡赤水出奇兵", singer: "长征组歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+        { name: "红军战士想念毛泽东", singer: "经典红歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
+        { name: "我的祖国", singer: "经典红歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
+        { name: "歌唱祖国", singer: "经典红歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+        { name: "东方红", singer: "经典老歌", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" },
+        { name: "义勇军进行曲", singer: "爱国金曲", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" }
+    ];
+
+    function renderSongs(list) {
+        const container = document.getElementById("songList");
+        container.innerHTML = "";
+        if(list.length === 0){
+            container.innerHTML = '<p style="text-align:center;padding:20px">未搜索到相关歌曲</p>';
+            return;
+        }
+        list.forEach(song => {
+            const item = document.createElement("div");
+            item.className = "song-item";
+            item.innerHTML = `
+                <button class="play-btn" onclick="playSong('${song.url}')">▶</button>
+                <div>
+                    <div><strong>${song.name}</strong></div>
+                    <div style="font-size:13px;opacity:0.8">${song.singer}</div>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+    function playSong(url) {
+        document.getElementById('audioPlayer').src = url;
+        document.getElementById('audioPlayer').play();
+    }
+    // 全网搜索匹配曲目
+    function searchNetSongs() {
+        const kw = document.getElementById("songSearchInput").value.trim().toLowerCase();
+        const filtered = kw ? netSongLib.filter(s => 
+            s.name.toLowerCase().includes(kw) || s.singer.toLowerCase().includes(kw)
+        ) : netSongLib;
+        renderSongs(filtered);
+    }
+    renderSongs(netSongLib);
+
+    // ========== 扩充版知识闯关题库 ==========
+    const quizList = [
+        {q:"1. 红军长征正式开始年份是？",opt:["1933年","1934年","1935年","1936年"],ans:"B"},
+        {q:"2. 长征胜利结束年份是？",opt:["1934年","1935年","1936年","1937年"],ans:"C"},
+        {q:"3. 遵义会议召开时间？",opt:["1934年","1935年","1936年","1937年"],ans:"B"},
+        {q:"4. 红军长征总里程约为？",opt:["一万里","二万五千里","三万里","五万里"],ans:"B"},
+        {q:"5. 四渡赤水战役属于哪个省份？",opt:["四川","贵州","云南","江西"],ans:"B"},
+        {q:"6. 飞夺泸定桥发生在哪条河流？",opt:["湘江","大渡河","金沙江","黄河"],ans:"B"},
+        {q:"7. 长征出发地主要是？",opt:["陕北","江西瑞金","四川甘孜","湖南"],ans:"B"},
+        {q:"8. 红军三大主力会师地点是？",opt:["吴起镇","会宁","懋功","腊子口"],ans:"B"},
+        {q:"9. 爬雪山过草地主要区域在？",opt:["西北高原","西南川藏地区","华北平原","江南丘陵"],ans:"B"},
+        {q:"10. 长征途中挽救革命的关键会议是？",opt:["八七会议","遵义会议","古田会议","瓦窑堡会议"],ans:"B"}
+    ];
+    let score = 0;
+    let nowQuizIndex = 0;
+
+    // 渲染题目
+    function renderQuiz(){
+        if(nowQuizIndex >= quizList.length){
+            document.getElementById('quiz-content').innerHTML = `<p style="font-size:18px;text-align:center">答题完毕！最终得分：${score}</p>`;
+            return;
+        }
+        let item = quizList[nowQuizIndex];
+        let html = `<p style="margin:10px 0;">${item.q}</p>`;
+        item.opt.forEach((text,idx)=>{
+            let code = String.fromCharCode(65+idx);
+            html += `<button class="quiz-option" onclick="checkAnswer(this,'${item.ans}')">${code}.${text}</button>`;
+        });
+        document.getElementById('quiz-content').innerHTML = html;
+    }
+    // 答案判断
+    function checkAnswer(btn, correctAns) {
+        document.querySelectorAll('.quiz-option').forEach(b => b.style.background = 'rgba(255,255,255,0.1)');
+        let userSel = btn.innerText.charAt(0);
+        if (userSel === correctAns) {
+            btn.style.background = '#27ae60';
+            score += 10;
+            document.getElementById('score').innerText = score;
+        } else {
+            btn.style.background = '#e74c3c';
+            alert("回答错误，正确答案是：" + correctAns);
+        }
+    }
+    // 下一题
+    function nextQuiz(){
+        nowQuizIndex++;
+        renderQuiz();
+    }
+    renderQuiz();
+
+    // ========== 增强版AI问答核心代码 ==========
+    // 1. 长征专属知识库（精准匹配优先）
+    const longMarchKnowledge = {
+        "长征开始时间": "1934年10月，中央红军主力从江西瑞金出发，正式开始长征。",
+        "长征结束时间": "1936年10月，红一、二、四方面军在甘肃会宁会师，标志着长征全面胜利结束；中央红军（红一方面军）于1935年10月19日抵达吴起镇，完成长征。",
+        "遵义会议时间": "1935年1月，遵义会议在贵州遵义召开，是长征中生死攸关的转折点。",
+        "长征里程": "中央红军（红一方面军）长征里程约二万五千里，红二方面军约一万六千里，红四方面军约一万里。",
+        "四渡赤水": "四渡赤水战役发生在1935年1-3月的贵州、四川、云南交界地区，是毛泽东军事指挥的经典之作，成功摆脱了国民党军队的围追堵截。",
+        "飞夺泸定桥": "1935年5月29日，红军突击队员冒着枪林弹雨，攀爬没有木板的泸定桥铁索，成功夺取泸定桥，突破大渡河天险。",
+        "湘江战役": "1934年11-12月的湘江战役是长征中最惨烈的一战，红军付出了巨大牺牲，人数从8.6万锐减至3万余人，但成功突破了国民党第四道封锁线。",
+        "爬雪山过草地": "1935年6月开始，红军先后翻越夹金山、梦笔山等多座大雪山，1935年8月穿越松潘大草地，极端恶劣的自然环境造成了大量非战斗减员。",
+        "三大主力会师": "1936年10月，红一方面军、红二方面军、红四方面军在甘肃会宁和将台堡会师，标志着长征的最终胜利。",
+        "遵义会议意义": "遵义会议结束了王明“左”倾教条主义在中央的统治，确立了毛泽东在党和红军的领导地位，是中国共产党历史上一个生死攸关的转折点。",
+        "长征精神": "长征精神的核心是：不怕牺牲、前赴后继的精神；勇往直前、坚韧不拔的精神；众志成城、团结互助的精神；百折不挠、克服困难的精神。",
+        "长征出发地": "中央红军的主要出发地是江西瑞金和于都，红二方面军从湖南桑植出发，红四方面军从川陕革命根据地出发。",
+        "腊子口战役": "1935年9月，红军攻克甘肃腊子口天险，打开了进入陕北革命根据地的通道，为中央红军与陕北红军会师创造了条件。",
+        "强渡大渡河": "1935年5月，17名红军勇士组成突击队，乘坐木船强渡大渡河安顺场渡口，为红军后续部队渡河打开了通道。",
+        "吴起镇会师": "1935年10月19日，中央红军抵达陕北吴起镇，与陕北红军胜利会师，标志着中央红军长征的结束。"
+    };
+
+    // 2. 会话记忆（简单上下文）
+    let chatHistory = [];
+
+    // 3. 精准匹配知识库
+    function matchKnowledge(question) {
+        // 关键词匹配
+        const lowerQ = question.toLowerCase().replace(/[？？。，、！]/g, "");
+        for (const [key, answer] of Object.entries(longMarchKnowledge)) {
+            if (lowerQ.includes(key.toLowerCase())) {
+                return answer;
+            }
+        }
+        return null;
+    }
+
+    // 4. 调用通用AI接口（示例用模拟返回，实际可替换为真实接口）
+    async function callAIApi(question) {
+        // 拼接上下文
+        const context = chatHistory.slice(-5).map(item => 
+            item.role === 'user' ? `用户：${item.content}` : `AI：${item.content}`
+        ).join('\n') + `\n用户：${question}\nAI：`;
+
+        try {
+            // 模拟AI请求延迟
+            await new Promise(resolve => setTimeout(resolve, 800));
+            // 模拟返回（实际项目中替换为真实API请求）
+            return `关于“${question}”的补充解答：长征是中国革命史上的伟大壮举，彰显了红军的钢铁意志与革命信念。`;
+        } catch (e) {
+            return "抱歉，暂时无法回答你的问题，请稍后再试。";
+        }
+    }
+
+    // 5. 发送消息核心逻辑
+    async function sendMsg() {
+        const input = document.getElementById('userInput');
+        const question = input.value.trim();
+        if (!question) return;
+
+        // 清空输入框
+        input.value = '';
+
+        // 1. 添加用户消息到聊天框
+        const chatBox = document.getElementById('chat-box');
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user-message';
+        userMsg.innerText = question;
+        chatBox.appendChild(userMsg);
+
+        // 2. 记录会话历史
+        chatHistory.push({ role: 'user', content: question });
+
+        // 3. 显示加载状态
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'chat-message ai-message';
+        loadingMsg.innerHTML = '<span class="loading"></span> 正在思考...';
+        chatBox.appendChild(loadingMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            // 4. 优先匹配知识库
+            let answer = matchKnowledge(question);
+            if (!answer) {
+                // 5. 知识库无匹配则调用AI接口
+                answer = await callAIApi(question);
+            }
+
+            // 6. 移除加载状态，显示回答
+            chatBox.removeChild(loadingMsg);
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'chat-message ai-message';
+            aiMsg.innerText = answer;
+            chatBox.appendChild(aiMsg);
+
+            // 7. 记录AI回答到会话历史
+            chatHistory.push({ role: 'assistant', content: answer });
+        } catch (e) {
+            // 8. 异常处理
+            chatBox.removeChild(loadingMsg);
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'chat-message ai-message';
+            errorMsg.innerText = '抱歉，处理你的问题时出错了，请重试。';
+            chatBox.appendChild(errorMsg);
+        }
+
+        // 9. 滚动到底部
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</body>
+</html>
